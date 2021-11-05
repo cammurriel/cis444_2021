@@ -1,0 +1,91 @@
+<html>
+  <body>
+    <div id = "loginPage">
+      <form id = "loginForm">
+
+	<div class="imgcontainer">
+
+	</div>
+	
+  
+	<div class="container">
+	  <label><b>Username</b></label>
+	  <input id ="username" type="text" placeholder="Enter Username" name="username" required>
+	  
+	  <label><b>Password</b></label>
+	  <input id = "password" type="password" placeholder="Enter Password" name="password" required>
+	  
+	  <button id = "button"type="submit">Login</button>
+	</div>
+      </form>
+    </div>
+    <div id = "booksPage" >
+
+      <h1>Books Page </h1>
+
+    </div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+
+//      let token = undefined
+      
+      
+
+      function showLogin()
+      {
+	  console.log("running")
+	  $("#booksPage").hide()
+	  $("#loginPage").show()
+         
+      }
+
+      function showBooks()
+      {
+	  $("#loginPage").hide()
+	  $("#booksPage").show()
+      }
+
+      function fetchPostLogin(event)
+      {
+	  event.preventDefault()
+	  let formData = {username:$("#username").val(), password: $("#password").val()}
+	  let endpoint = "/login"
+	  let info = {method: "POST", headers:{'Content-Type':'application/json'}, body:JSON.stringify(formData)}
+	  fetch(endpoint, info).then((response)=>{
+	      return response.json()
+	  }).then((data)=>{
+	      
+	      console.log(data)
+	      
+
+
+
+
+	  }).catch(error =>{console.log(error)})
+
+	  return false
+	  
+      }
+
+
+      def hash_password(self, password: str) -> str:
+        '''Uses bcrypt to hash password'''
+    
+        salt = bcrypt.gensalt(rounds=10)
+        return bcrypt.hashpw(bytes(password, 'utf-8'), salt)
+     
+
+    def check_password(self, password: str, hashed_password) -> bool:
+        '''Uses bcrypt to check password'''
+
+        hashed_password = hashed_password.encode("utf-8")        
+        return bcrypt.checkpw(bytes(password, 'utf-8'), hashed_password)
+      
+      $(document).on("submit","#loginForm",(event)=>{fetchPostLogin(event)})
+       showLogin()
+    </script>
+  </body>
+</html>
