@@ -1,0 +1,76 @@
+<html>
+  <body>
+    <div id = "loginPage">
+      <form id = "loginForm">
+
+        <div class="imgcontainer">
+        </div>
+        
+  
+    <div class="container">
+      <label><b>Username</b></label>
+      <input id ="username" type="text" placeholder="Enter Username" name="username" required>
+          
+      <label><b>Password</b></label>
+      <input id = "password" type="password" placeholder="Enter Password" name="password" required>
+          
+      <button id = "button"type="submit" onclick="fetchPostLogin(); return false;">Login</button>
+    </div>
+      </form>
+    </div>
+    <div id = "booksPage" style="display:none">
+      <h1>Books Page </h1>
+     <div id="booklist"></div>
+
+    </div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script>
+
+      let token = undefined
+      
+      
+
+      function showLogin()
+      {
+      console.log("running")
+      $("#booksPage").hide()
+      $("#loginPage").show()
+         
+      }
+
+      function showBooks()
+      {
+      $("#loginPage").hide()
+      $("#booksPage").show()
+      //load books
+      $.getJSON( "/getBooks",  { "token" : token } ,  function( json ) {
+            //json = what you send back from python
+	  //book[];
+	  //var books = [];
+            //book_list = "";
+            //for b in books:
+            //  book_list = book_list + " " + b.text + "<br>"
+            //$('#booklist').html(book_list);
+      
+      })}
+
+      function fetchPostLogin(){
+            $.post("/login", {username:$("#username").val(), password: $("#password").val()}, 
+                function(data, textStatus) {
+                    /*Gets called on server response*/
+                    console.log(data);
+                    token = data.token;
+                    showBooks();
+                }, "json");
+
+      }
+
+
+      showLogin()
+
+    </script>
+  </body>
+</html>

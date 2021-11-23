@@ -41,15 +41,17 @@ def index():
 @token_required
 def exec_secure_proc(proc_name):
     logger.debug(f"Secure Call to {proc_name}")
-
+    
     #setup the env
     init_new_env()
 
     #see if we can execute it..
     resp = ""
     try:
+       
         fn = getattr(__import__('secure_calls.'+proc_name), proc_name)
         resp = fn.handle_request()
+        logger.debug(str(resp))
     except Exception as err:
         ex_data = str(Exception) + '\n'
         ex_data = ex_data + str(err) + '\n'
@@ -64,7 +66,7 @@ def exec_secure_proc(proc_name):
 @app.route("/open_api/<proc_name>",methods=['GET', 'POST'])
 def exec_proc(proc_name):
     logger.debug(f"Call to {proc_name}")
-
+    print(proc_name)
     #setup the env
     init_new_env()
 

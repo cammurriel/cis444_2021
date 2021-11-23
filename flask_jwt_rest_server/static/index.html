@@ -25,32 +25,73 @@
 			return false;
 		}
 
+	  function createBooks(index,title,price)
+	  {
+	     let book_data =`<div id = books>
+                         
+                        <p>Book:  ${title}, price: $  ${price}</p>
+                                            
+                            <button value = "buy book" onclick="buy_book(${index})"> buy book</button>
+                      
+                      </div>`           
+                     	   
+		  return book_data;
+	  }
+	  
 		function get_books(){
 			 //make secure call with the jwt
-			secure_get_with_token("/secure_api/get_books", {} , function(data){
-					console.log("got books"); 
-					console.log(data); 
-					$('#buybook').show();
+		    secure_get_with_token("/secure_api/get_books", {} , function(data){
+			var book = [];
+			for (let i = 0; i < 5; i++) {
+			    console.log(data.books[i].book_title, data.books[i].book_price)
+			    make_book = createBooks(i,data.books[i].book_title, data.books[i].book_price);
+			    $("#displayBooks").append(make_book);
+			    
+			}
+			console.log(book);
+			$('#login').hide();
 					},
-                                                function(err){ console.log(err) });
+                                          function(err){ console.log(err) });
 		}
-                function buy_book(book_id){
+          function buy_book(book_id)
+	  {
                          //make secure call with the jwt
-                        secure_get_with_token("/secure_api/get_books", {"book_id" : book_id} , function(data){console.log("got books"); console.log(data)},
-                                                function(err){ console.log(err) });
-                }
+              secure_get_with_token("/secure_api/get_books", {"book_id" : book_id} ,                                                                       function(data)
+		{
+	            console.log("got books"); console.log(data), console.log(book_id), console.log(data.books[book_id].book_title)
+		    let book_title = data.books[book_id].book_title
+		    purchaseBook = purchased_book(book_title)
+ 		    $("#PurchasedBooks").append(purchaseBook);
+		    $('#books').hide();
+		},
+	  function(err){ console.log(err) });
+	  }
+	  function purchased_book(book_title)
+	  {
+
+	      let div = `<p>Book Bought:  ${book_title}</p>`
+	      return div;
+
+	  }
 
 	</script>
             <div id="login">
 	    	<form >
   			<label for="fname">First name:</label><br>
-  				<input type="text" id="fname" name="fname" value="John"><br>
+  				<input type="text" id="fname" name="fname" value="Cam"><br>
   			<label for="password">Password:</label><br>
-  				<input type="password" id="password" name="password" value="12212"><br><br>
-  			<input type="submit" value="Signup" onclick="return send_form();">
+  				<input type="password" id="password" name="password" value="123"><br><br>
+  			<input type="submit" value="Login" onclick="return send_form();">
 		</form>
 	    </div>
-	    <button id="buybook" onclick="buy_book(1234)" style="display:none" >Buy Book</button>
+	    <div id = "displayBooks">
+
+	    </div>
+
+	    <div id = "PurchasedBooks">
+
+            </div>
+	     
     </body>
 </html>
 

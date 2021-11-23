@@ -100,7 +100,7 @@ def hellodb():
 #Assignment #3
 @app.route('/', methods=['GET'])
 def loginPage():
-    return render_template('books.html')
+    return render_template('Books2.html')
 
 
 @app.route('/login', methods=['POST']) #endpoint
@@ -108,41 +108,42 @@ def authUser():
     global token
     print('here ',request.json)
     cur = global_db_con.cursor()
-    user = request.json.get('username')
-    passwrd = request.json.get('password')
-    #saltedPw = bcrypt.hashpw( bytes(passwrd,  'utf-8' ) , bcrypt.gensalt(10))
+    user = request.form['username']
+    passwrd = request.form['password']
+
     cur.execute(f"SELECT * FROM users WHERE username = '{user}';")
 
-    #1. query the db
+    #1. query the db                                                                                                                      
     print('1')
-    #cur.execute("SELECT username FROM users WHERE id = 1")
+    #cur.execute("SELECT username FROM users WHERE id = 1")                                                                                
     print('2')
-    #2 fetch one
+    #2 fetch one                                                                                                                          
     userRow = cur.fetchone()
     print(userRow)
-    #3. if user row is none return jsonify invalid username check if fetch one is not none
+    #3. if user row is none return jsonify invalid username check if fetch one is not none                                                
     if userRow is None:
-        return jsonify({"message" : "INVALID INPUT", 'token' : None}) 
-    #4. check the pw by bcrypt check password
+        return jsonify({"message" : "INVALID INPUT", 'token' : None})
+    #4. check the pw by bcrypt check password                                                                                              
     else:
-         #bytes(passwrd,"utf-8")
          userPass = userRow[2]
          userPass = bytes(userPass,"utf-8")
-         
+
          print (userPass, '', passwrd)
          isValid = bcrypt.checkpw(bytes(passwrd,('utf-8')),userPass)
-          #5 if authenticated return a jwt token otherwise return error message
-         if isValid:           
+          #5 if authenticated return a jwt token otherwise return error message                                                            
+         if isValid:
              print('true')
-             jwt_str = jwt.encode({"username" :"dfghdfgsdfg" }
+             jwt_str = jwt.encode({"username" :"cam" }
                             , JWT_SECRET, algorithm="HS256")
-             print(jwt_str)
+
+             print('JWT: ',jwt_str)
+             print(jsonify({'message' : 'VALID USER, TOKEN IS SENT', 'token' : jwt_str}))
+             return jsonify({'message' : 'VALID USER, TOKEN IS SENT', 'token' : jwt_str})
          else:
              print('false')
+    
 
-         return jsonify({'message' : 'VALID USER', 'token' : 200})   
    
 
       
-
 app.run(host='0.0.0.0', port=80)

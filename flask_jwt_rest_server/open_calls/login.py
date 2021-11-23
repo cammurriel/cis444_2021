@@ -13,7 +13,8 @@ def handle_request():
             "sub" : request.form['firstname'] #sub is used by pyJwt as the owner of the token
             }
     if not user:
+        print('here')
         return json_response(status_=401, message = 'Invalid credentials', authenticated =  False )
-
+    print('working')
     return json_response( token = create_token(user) , authenticated = True)
 
