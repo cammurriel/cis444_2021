@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	     <script src="https://code.jquery.com/jquery-3.6.0.js" 
+		     integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+	     <script src="/static/cis444.js"></script>
+    </head>
+    <body style = "background-color:teal">
+      
+	<script>
+
+	  function send_form(){
+			$.post("/open_api/login", { "firstname":$('#fname').val(), "password":$('#password').val()},
+                       		function(data, textStatus) {
+					//this gets called when browser receives response from server
+                                    console.log(data)
+				        console.log(data.token);
+					//Set global JWT
+					jwt = data.token;
+					//make secure call with the jwt
+				    get_cars();
+				}, "json").fail( function(response, data) {
+					//this gets called if the server throws an error
+                                    console.log(data)
+				    console.log("NEW USER NOT RECONIZED", response);
+				    console.log(response);
+
+				});
+			return false;
+	  }
+
+	  function showCarToAdmin()
+	  {
+	      $('#DisplayCars').show()
+	      $('#AddCars').hide()
+	  }
+
+	  function addCar()
+	  {
+	             
+	      $('#DisplayCars').hide()
+	  let car_form = ` <div id="add_car">
+                <div >
+                        <label for="Car">Car name:</label><br>
+                                <input type="text" id="car_name"name ="carname" value=""><br>
+                        <label for="vin">Vin:</label><br>
+                                <input type="text" id="car_vin" name = "carvin"value=""><br>
+                        <label for="price">Car Price:</label><br>
+                                <input type="text" id="car_price" name = "carprice"value=""><br>   
+                                 <input type="submit" value="Add Car" onclick="sendCarToSever()">
+                                 <input type="submit" value="Get Cars" onclick="showCarToAdmin()"> 
+                </div>
+            </div>`
+	      $('#AddCars').append(car_form)
+	      
+	  }
+
+	   function sendCarToSever()
+          {
+	      $.post("/open_api/make_car", { "carname":$('#car_name').val(), "carvin":$('#car_vin').val(), "carprice":$('#car_price').val()},
+
+	    	     
+		     function makeCar(data, textStatus) {
+			 
+                                        //this gets called when browser receives response from server
+                         console.log('MAKE CAR METHOD')
+			                console.log(data)
+                                        console.log(data.token);
+                                        //Set global JWT                                                                                  
+                                        jwt = data.token;
+                                        //make secure call with the jwt                                                                   
+                                        
+			 console.log("Car Added")
+			 addCar()
+		     }, "json").fail( function(response, data) {
+			 
+			 console.log("MAKE CARS ERROR",data)
+	       });
+
+	      
+	  }
+	  function displayCars(index,car,vin,price)
+	  {
+	     let car_inventory =`<div id = cars>
+                       <h1> ${car} For Sale ${price} </h1>                         
+                        <p>Car:  ${car}, vin: ${vin}, price: $  ${price}</p>
+                     
+                      </div>`           
+		  return car_inventory;
+	  }
+	  
+		function get_cars(){
+			 //make secure call with the jwt
+		    secure_get_with_token("/secure_api/get_cars", {} , function(data){
+			var car = [];
+			console.log(data.cars.length);
+			for (let i = 0; i < data.cars.length; i++) {
+			    console.log(data.cars[i].car, data.cars[i].price)
+			    make_car = displayCars(i,data.cars[i].car, data.cars[i].vin, data.cars[i].price);
+			    $("#DisplayCars").append(make_car);
+			    
+			}
+			console.log(car);
+			let addNewCarButton = `<button value = "add car" onclick="addCar()"> Add Car</button>`
+			$("#DisplayCars").append(addNewCarButton);
+			$('#login').hide();
+					},
+                                          function(err){ console.log(err) });
+		}
+          function buy_book(car)
+	  {
+                         //make secure call with the jwt
+              secure_get_with_token("/secure_api/get_cars", {"car" :car} ,                                                                       function(data)
+		{
+	            console.log("got cars"); console.log(data), console.log(car), console.log(data.cars[car].car)
+		    let car_name = data.cars[car].car
+		    purchaseBook = purchased_car(car_name)
+ 		    $("#PurchasedCars").append(purchaseBook);
+		    $('#cars').hide();
+		},
+	  function(err){ console.log(err) });
+	  }
+	  function purchased_car(book_title)
+	  {
+
+	      let div = `<p>Cars For Sale:  ${book_title}</p>`
+	      return div;
+
+	  }
+
+	</script>
+            <div id="login">
+	      <h1> Dealership Employee Login </h1>
+	      <form >
+
+  		  <label for="fname">First name:</label><br>
+  				<input type="text" id="fname" name="fname" value=""><br>
+  			<label for="password">Password:</label><br>
+  				<input type="password" id="password" name="password" value=""><br><br>
+  				<input type="submit" value="Login" onclick="return send_form();">
+				
+		</form>
+	    </div>
+                </form>
+	    
+	    <div id = "DisplayCars">
+
+	    </div>
+
+	    <div id = "PurchaseCars">
+
+            </div>
+
+	    <div id = "AddCars">
+
+            </div>				
+	    
+    </body>
+</html>
+
